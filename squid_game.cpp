@@ -4,7 +4,6 @@
 #include <QPixmap>
 #include <QImage>
 #include <QThread>
-#include <vlc/vlc.h>
 
 #include "controller/bridge_game_handle.h"
 #include "model/bridge_game_service.h"
@@ -12,10 +11,6 @@
 EStage g_stage = EStage::Title;
 
 SquidGame* SquidGame::pThis = nullptr;
-
-libvlc_instance_t * inst;
-libvlc_media_player_t *mp;
-libvlc_media_t *m;
 
 SquidGame::SquidGame(QWidget *parent)
     : QWidget(parent)
@@ -37,7 +32,7 @@ SquidGame::SquidGame(QWidget *parent)
     ui->label_Soi->setPalette(pe);
     pe.setColor(QPalette::WindowText,Qt::white);
     ui->label_Title->setPalette(pe);
-    ui->label_Mark->setStyleSheet("QLabel { color: rgb(255,20,147);}");
+    ui->label_Mark->setStyleSheet("QLabel { color: rgb(255,20,147);}"); //dark pink
 
     QFont f("Kristen ITC", 100);
     ui->label_Soi->setFont(f);
@@ -67,7 +62,7 @@ SquidGame::SquidGame(QWidget *parent)
 
     handle->Init(TOTAL_STEPS);
 
-    inst = libvlc_new(0, NULL);
+    vlc_instance = libvlc_new(0, NULL);
     SquidGame::pThis->PlayAudio(opening_music, false);
 }
 
@@ -216,17 +211,17 @@ void SquidGame::PlayAudio(QString path, bool stop_first)
 
     if(stop_first)
     {
-        libvlc_media_player_stop(mp);
+        libvlc_media_player_stop(vlc_media_player);
     }
 
     QByteArray byte_arr = path.toLocal8Bit();
     const char *str = byte_arr.data();
 
-    m = libvlc_media_new_path(inst, str);
-    mp = libvlc_media_player_new_from_media(m);
-    libvlc_media_player_set_hwnd(mp, (void *)this->winId());
-    libvlc_media_release(m);
-    libvlc_media_player_play(mp);
+    vlc_media = libvlc_media_new_path(vlc_instance, str);
+    vlc_media_player = libvlc_media_player_new_from_media(vlc_media);
+    libvlc_media_player_set_hwnd(vlc_media_player, (void *)this->winId());
+    libvlc_media_release(vlc_media);
+    libvlc_media_player_play(vlc_media_player);
 }
 
 void Presenter::ShowImage(EStage stage)

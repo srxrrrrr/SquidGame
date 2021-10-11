@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include "controller/IGameController.h"
 #include "model/IGameService.h"
+#include <vlc/vlc.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SquidGame; }
@@ -62,6 +63,9 @@ public:
     const QString opening_music = "debug/music/Squid Game - Way Back Then.mp3";
     const QString dead_music = "debug/music/dead.m4a";
     const QString win_music = "debug/music/win.m4a";
+    libvlc_instance_t * vlc_instance;
+    libvlc_media_player_t *vlc_media_player;
+    libvlc_media_t *vlc_media;
 
 signals:
     void UpdateScreen();
