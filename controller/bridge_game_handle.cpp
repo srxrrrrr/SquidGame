@@ -28,15 +28,15 @@ void BridgeGameHandle::SelectItem(ESelection selection)
     unsigned char step = 0;
     bool finished = false;
 
-    ret = game_service->GetResult(selection);
+    ret = game_service->CheckResult(selection);
     game_service->GetProgress(&step, &finished);
 
     if(ret)
     {
         if(finished)
         {
-            presenter->ShowProgress(step);
             presenter->ShowImage(EStage::Win);
+            presenter->ShowProgress(step);
         }
         else
         {

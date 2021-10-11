@@ -9,7 +9,7 @@ public:
     BridgeGameService();
     ~BridgeGameService();
     virtual void Init(unsigned char total_step);
-    virtual bool GetResult(ESelection selection);
+    virtual bool CheckResult(ESelection selection);
     virtual void GetProgress(unsigned char* step, bool* finished);
 
 private:

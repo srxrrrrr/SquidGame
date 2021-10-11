@@ -25,7 +25,7 @@ void BridgeGameService::Init(unsigned char total_step)
     }
 }
 
-bool BridgeGameService::GetResult(ESelection selection)
+bool BridgeGameService::CheckResult(ESelection selection)
 {
     if((unsigned char)selection == *(answer_arr + current_step))
     {
