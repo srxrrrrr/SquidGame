@@ -19,6 +19,7 @@ SquidGame::SquidGame(QWidget *parent)
     ui->setupUi(this);
     pThis = this;
 
+    //讓所有的滑鼠移動能被mouseMoveEvent()抓到位置
     setMouseTracking(true);
 
     QPalette pe;
@@ -206,7 +207,7 @@ void SquidGame::mousePressEvent(QMouseEvent *event)
 
 void SquidGame::PlayAudio(QString path, bool stop_first)
 {
-    //尚未撥放過任何多媒體，就執行此function，會造成process crash
+    //尚未播放過任何多媒體，就執行此function，會造成process crash
 //    libvlc_media_player_stop(mp);
 
     if(stop_first)
@@ -215,6 +216,11 @@ void SquidGame::PlayAudio(QString path, bool stop_first)
     }
 
     QByteArray byte_arr = path.toLocal8Bit();
+
+    //提供絕對路徑
+//    QString full_path = qApp->applicationDirPath() + path;
+//    QByteArray byte_arr = full_path.toLocal8Bit();
+
     const char *str = byte_arr.data();
 
     vlc_media = libvlc_media_new_path(vlc_instance, str);
