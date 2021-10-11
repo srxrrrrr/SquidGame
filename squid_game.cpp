@@ -4,6 +4,7 @@
 #include <QPixmap>
 #include <QImage>
 #include <QThread>
+#include <vlc/vlc.h>
 
 #include "controller/bridge_game_handle.h"
 #include "model/bridge_game_service.h"
@@ -11,6 +12,10 @@
 EStage g_stage = EStage::Title;
 
 SquidGame* SquidGame::pThis = nullptr;
+
+libvlc_instance_t * inst;
+libvlc_media_player_t *mp;
+libvlc_media_t *m;
 
 SquidGame::SquidGame(QWidget *parent)
     : QWidget(parent)
@@ -62,7 +67,8 @@ SquidGame::SquidGame(QWidget *parent)
 
     handle->Init(TOTAL_STEPS);
 
-    qDebug() << "App path : " << qApp->applicationDirPath();
+    inst = libvlc_new(0, NULL);
+    SquidGame::pThis->PlayAudio(opening_music, false);
 }
 
 SquidGame::~SquidGame()
@@ -177,6 +183,9 @@ void SquidGame::mousePressEvent(QMouseEvent *event)
         {
             g_stage = EStage::Playing;
             ui->label_Next->setVisible(false);
+
+            SquidGame::pThis->PlayAudio(opening_music, true);
+
             emit UpdateScreen();
             return;
         }
@@ -200,9 +209,39 @@ void SquidGame::mousePressEvent(QMouseEvent *event)
     }
 }
 
+void SquidGame::PlayAudio(QString path, bool stop_first)
+{
+    //尚未撥放過任何多媒體，就執行此function，會造成process crash
+//    libvlc_media_player_stop(mp);
+
+    if(stop_first)
+    {
+        libvlc_media_player_stop(mp);
+    }
+
+    QByteArray byte_arr = path.toLocal8Bit();
+    const char *str = byte_arr.data();
+
+    m = libvlc_media_new_path(inst, str);
+    mp = libvlc_media_player_new_from_media(m);
+    libvlc_media_player_set_hwnd(mp, (void *)this->winId());
+    libvlc_media_release(m);
+    libvlc_media_player_play(mp);
+}
+
 void Presenter::ShowImage(EStage stage)
 {
     g_stage = stage;
+
+    if(g_stage == EStage::Dead)
+    {
+        SquidGame::pThis->PlayAudio(SquidGame::pThis->dead_music, true);
+    }
+    else if(g_stage == EStage::Win)
+    {
+        SquidGame::pThis->PlayAudio(SquidGame::pThis->win_music, true);
+    }
+
     emit SquidGame::pThis->UpdateScreen();
 }
 

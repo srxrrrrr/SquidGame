@@ -45,16 +45,23 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
 
+public:
+    void PlayAudio(QString path, bool stop_first);
+
 private:
     IGameHandle* handle = NULL;
     IPresenter* presenter = NULL;
     IGameService* game_service = NULL;
-//    unsigned char total_steps;
     int x_pos = 0;
     int y_pos = 0;
     bool inside_left_grid = false;
     bool inside_right_grid = false;
     RectanglePosition rectangle_position[2];
+
+public:
+    const QString opening_music = "debug/Squid Game - Way Back Then.mp3";
+    const QString dead_music = "debug/dead.m4a";
+    const QString win_music = "debug/win.m4a";
 
 signals:
     void UpdateScreen();
