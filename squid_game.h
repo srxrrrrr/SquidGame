@@ -59,9 +59,9 @@ private:
     RectanglePosition rectangle_position[2];
 
 public:
-    const QString opening_music = "debug/Squid Game - Way Back Then.mp3";
-    const QString dead_music = "debug/dead.m4a";
-    const QString win_music = "debug/win.m4a";
+    const QString opening_music = "debug/music/Squid Game - Way Back Then.mp3";
+    const QString dead_music = "debug/music/dead.m4a";
+    const QString win_music = "debug/music/win.m4a";
 
 signals:
     void UpdateScreen();
