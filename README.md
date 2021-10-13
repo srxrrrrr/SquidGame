@@ -14,5 +14,5 @@ libvlc-3.0.16
 ![image](https://github.com/srxrrrrr/SquidGame/blob/master/doc/MVC%20architecture.JPG)
 Welcome everyone help to improve this game:)
 
-## Important
-The project is for fun, so it's always for non-profit. If there are any copyright infringement, please notify as soon as possible.
+## Non-Profit
+The project is for fun, so it's ALWAYS for non-profit. If there are any copyright infringement, please notify as soon as possible.
