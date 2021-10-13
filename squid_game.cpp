@@ -94,8 +94,6 @@ void SquidGame::paintEvent(QPaintEvent *event)
     }
     else if(g_stage==EStage::Win)
     {
-        painter.drawPixmap(0,0,width(),height(),
-                           qApp->applicationDirPath() + "/img/win.jpg");
         return;
     }
 
@@ -230,6 +228,23 @@ void SquidGame::PlayAudio(QString path, bool stop_first)
     libvlc_media_player_play(vlc_media_player);
 }
 
+void SquidGame::PlayVideo(QString path, bool stop_first)
+{
+    if(stop_first)
+    {
+        libvlc_media_player_stop(vlc_media_player);
+    }
+
+    QByteArray byte_arr = path.toLocal8Bit();
+
+    const char *str = byte_arr.data();
+    SquidGame::pThis->vlc_media = libvlc_media_new_path(SquidGame::pThis->vlc_instance, str);
+    SquidGame::pThis->vlc_media_player = libvlc_media_player_new_from_media(SquidGame::pThis->vlc_media);
+    libvlc_media_player_set_hwnd(SquidGame::pThis->vlc_media_player, (void *)SquidGame::pThis->winId());
+    libvlc_media_release(SquidGame::pThis->vlc_media);
+    libvlc_media_player_play(SquidGame::pThis->vlc_media_player);
+}
+
 void Presenter::ShowImage(EStage stage)
 {
     g_stage = stage;
@@ -240,7 +255,7 @@ void Presenter::ShowImage(EStage stage)
     }
     else if(g_stage == EStage::Win)
     {
-        SquidGame::pThis->PlayAudio(SquidGame::pThis->win_music, true);
+        SquidGame::pThis->PlayVideo(SquidGame::pThis->win_video, true);
     }
 
     emit SquidGame::pThis->UpdateScreen();

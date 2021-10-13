@@ -48,6 +48,7 @@ protected:
 
 public:
     void PlayAudio(QString path, bool stop_first);
+    void PlayVideo(QString path, bool stop_first);
 
 private:
     IGameHandle* handle = NULL;
@@ -64,14 +65,14 @@ public:
 //    const QString opening_music = "D:/Git/github/SquidGame/build/debug/music/dead.m4a";
 
     //case1: IDE develop
-    const QString opening_music = "debug/music/Squid Game - Way Back Then.mp3";
-    const QString dead_music = "debug/music/dead.m4a";
-    const QString win_music = "debug/music/win.m4a";
+    const QString opening_music = "debug/media/Squid Game - Way Back Then.mp3";
+    const QString dead_music = "debug/media/dead.m4a";
+    const QString win_video = "debug/media/win.mp4";
 
     //case2: run exe
-//    const QString opening_music = "/music/Squid Game - Way Back Then.mp3";
-//    const QString dead_music = "/music/dead.m4a";
-//    const QString win_music = "/music/win.m4a";
+//    const QString opening_music = "/media/Squid Game - Way Back Then.mp3";
+//    const QString dead_music = "/media/dead.m4a";
+//    const QString win_video = "/media/win.mp4";
 
     libvlc_instance_t * vlc_instance;
     libvlc_media_player_t *vlc_media_player;
