@@ -65,6 +65,25 @@ SquidGame::SquidGame(QWidget *parent)
 
     vlc_instance = libvlc_new(0, NULL);
     SquidGame::pThis->PlayAudio(opening_music, false);
+
+    timer = new QTimer();
+    connect(timer ,SIGNAL(timeout()) ,this, SLOT(TimerSlot()));
+
+    stop_thread = new StopThread(this);
+}
+
+void SquidGame::TimerSlot()
+{
+    qDebug() << "timeout";
+
+    if(timer->isActive())
+    {
+        timer->stop();
+    }
+
+    //在主執行緒裡libvlc_media_player_stop()，偶爾會造成vlc crash，
+    //但在子thread裡libvlc_media_player_stop()則不會有此問題...
+    stop_thread->start();
 }
 
 SquidGame::~SquidGame()
@@ -121,6 +140,7 @@ void SquidGame::closeEvent(QCloseEvent *event)
     delete presenter;
     delete handle;
     delete game_service;
+    delete stop_thread;
     event->accept();
 }
 
@@ -129,12 +149,12 @@ void SquidGame::mouseMoveEvent(QMouseEvent *event)
     QPoint point = event->pos();
     x_pos = point.x();
     y_pos = point.y();
-    qDebug() << "x:" << x_pos << " y:" << y_pos;
+//    qDebug() << "x:" << x_pos << " y:" << y_pos;
 
     if((x_pos > rectangle_position[0].start_point.x() && y_pos > rectangle_position[0].start_point.y()) &&
        (x_pos < rectangle_position[0].end_point.x() && y_pos < rectangle_position[0].end_point.y()))
     {
-        qDebug() << "left IN!";
+//        qDebug() << "left IN!";
         inside_left_grid = true;
         emit UpdateScreen();
     }
@@ -147,7 +167,7 @@ void SquidGame::mouseMoveEvent(QMouseEvent *event)
     if((x_pos > rectangle_position[1].start_point.x() && y_pos > rectangle_position[1].start_point.y()) &&
        (x_pos < rectangle_position[1].end_point.x() && y_pos < rectangle_position[1].end_point.y()))
     {
-        qDebug() << "right IN!";
+//        qDebug() << "right IN!";
         inside_right_grid = true;
         emit UpdateScreen();
     }
@@ -208,9 +228,12 @@ void SquidGame::PlayAudio(QString path, bool stop_first)
     //尚未播放過任何多媒體，就執行此function，會造成process crash
 //    libvlc_media_player_stop(mp);
 
+    qDebug() << "play audio";
+
     if(stop_first)
     {
         libvlc_media_player_stop(vlc_media_player);
+        libvlc_media_player_release(vlc_media_player);
     }
 
     QByteArray byte_arr = path.toLocal8Bit();
@@ -230,19 +253,23 @@ void SquidGame::PlayAudio(QString path, bool stop_first)
 
 void SquidGame::PlayVideo(QString path, bool stop_first)
 {
+    qDebug() << "play video";
+
     if(stop_first)
     {
         libvlc_media_player_stop(vlc_media_player);
+        libvlc_media_player_release(vlc_media_player);
     }
 
     QByteArray byte_arr = path.toLocal8Bit();
-
     const char *str = byte_arr.data();
-    SquidGame::pThis->vlc_media = libvlc_media_new_path(SquidGame::pThis->vlc_instance, str);
-    SquidGame::pThis->vlc_media_player = libvlc_media_player_new_from_media(SquidGame::pThis->vlc_media);
-    libvlc_media_player_set_hwnd(SquidGame::pThis->vlc_media_player, (void *)SquidGame::pThis->winId());
-    libvlc_media_release(SquidGame::pThis->vlc_media);
-    libvlc_media_player_play(SquidGame::pThis->vlc_media_player);
+
+    vlc_media = libvlc_media_new_path(vlc_instance, str);
+    vlc_media_player = libvlc_media_player_new_from_media(vlc_media);
+    stop_thread->vlc_media_player = vlc_media_player;
+    libvlc_media_player_set_hwnd(vlc_media_player, (void *)this->winId());
+    libvlc_media_release(pThis->vlc_media);
+    libvlc_media_player_play(pThis->vlc_media_player);
 }
 
 void Presenter::ShowImage(EStage stage)
@@ -251,7 +278,11 @@ void Presenter::ShowImage(EStage stage)
 
     if(g_stage == EStage::Dead)
     {
-        SquidGame::pThis->PlayAudio(SquidGame::pThis->dead_music, true);
+        qDebug() << "dead event";
+
+        SquidGame::pThis->timer->start(5000);
+
+        SquidGame::pThis->PlayVideo(SquidGame::pThis->dead_video, true);
     }
     else if(g_stage == EStage::Win)
     {

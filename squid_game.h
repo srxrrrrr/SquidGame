@@ -7,6 +7,8 @@
 #include "controller/IGameController.h"
 #include "model/IGameService.h"
 #include <vlc/vlc.h>
+#include <QTimer>
+#include "stop_thread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SquidGame; }
@@ -37,6 +39,7 @@ public:
     ~SquidGame();
     static SquidGame *pThis;
     Ui::SquidGame *ui;
+    StopThread* stop_thread;
 
 private:
     virtual void paintEvent(QPaintEvent *event);
@@ -67,7 +70,13 @@ public:
     //case1: IDE develop
     const QString opening_music = "debug/media/Squid Game - Way Back Then.mp3";
     const QString dead_music = "debug/media/dead.m4a";
+    const QString dead_video = "debug/media/dead.mp4";
     const QString win_video = "debug/media/win.mp4";
+
+//    const QString opening_music = "release/media/Squid Game - Way Back Then.mp3";
+//    const QString dead_music = "release/media/dead.m4a";
+//    const QString dead_video = "release/media/dead.mp4";
+//    const QString win_video = "release/media/win.mp4";
 
     //case2: run exe
 //    const QString opening_music = "/media/Squid Game - Way Back Then.mp3";
@@ -77,6 +86,11 @@ public:
     libvlc_instance_t * vlc_instance;
     libvlc_media_player_t *vlc_media_player;
     libvlc_media_t *vlc_media;
+
+    QTimer *timer;
+
+public slots:
+    void TimerSlot();
 
 signals:
     void UpdateScreen();

@@ -12,7 +12,8 @@ SOURCES += \
     controller/bridge_game_handle.cpp \
     main.cpp \
     model/bridge_game_service.cpp \
-    squid_game.cpp
+    squid_game.cpp \
+    stop_thread.cpp
 
 HEADERS += \
     controller/IGameController.h \
@@ -20,6 +21,7 @@ HEADERS += \
     model/IGameService.h \
     model/bridge_game_service.h \
     squid_game.h \
+    stop_thread.h \
     type_define.h
 
 FORMS += \
