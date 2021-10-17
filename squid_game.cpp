@@ -64,7 +64,7 @@ SquidGame::SquidGame(QWidget *parent)
     handle->Init(TOTAL_STEPS);
 
     vlc_instance = libvlc_new(0, NULL);
-    SquidGame::pThis->PlayAudio(opening_music, false);
+    SquidGame::pThis->PlayAudio(opening_audio, false);
 
     timer = new QTimer();
     connect(timer ,SIGNAL(timeout()) ,this, SLOT(TimerSlot()));
@@ -81,8 +81,9 @@ void SquidGame::TimerSlot()
         timer->stop();
     }
 
-    //在主執行緒裡libvlc_media_player_stop()，偶爾會造成vlc crash，
+    //在主執行緒裡播放"影片"後，呼叫libvlc_media_player_stop()，偶爾會造成vlc crash，
     //但在子thread裡libvlc_media_player_stop()則不會有此問題...
+    //PS.在主執行緒裡播放mp3，並在主執行緒裡libvlc_media_player_stop()，並不會造成vlc crash
     stop_thread->start();
 }
 
@@ -198,7 +199,7 @@ void SquidGame::mousePressEvent(QMouseEvent *event)
             g_stage = EStage::Playing;
             ui->label_Next->setVisible(false);
 
-            SquidGame::pThis->PlayAudio(opening_music, true);
+            SquidGame::pThis->PlayAudio(opening_audio, true);
 
             emit UpdateScreen();
             return;
@@ -268,8 +269,21 @@ void SquidGame::PlayVideo(QString path, bool stop_first)
     vlc_media_player = libvlc_media_player_new_from_media(vlc_media);
     stop_thread->vlc_media_player = vlc_media_player;
     libvlc_media_player_set_hwnd(vlc_media_player, (void *)this->winId());
-    libvlc_media_release(pThis->vlc_media);
-    libvlc_media_player_play(pThis->vlc_media_player);
+    libvlc_media_release(vlc_media);
+    libvlc_media_player_play(vlc_media_player);
+}
+
+void SquidGame::PlayUniqueMedia(QString path)
+{
+    QByteArray byte_arr = path.toLocal8Bit();
+    const char *str = byte_arr.data();
+
+    libvlc_instance_t* vlc_instance_single = libvlc_new(0, NULL);
+    libvlc_media_t* vlc_media_single = libvlc_media_new_path(vlc_instance_single, str);
+    libvlc_media_player_t* vlc_media_player_single = libvlc_media_player_new_from_media(vlc_media_single);
+    libvlc_media_player_set_hwnd(vlc_media_player_single, (void *)SquidGame::pThis->winId());
+    libvlc_media_release(vlc_media_single);
+    libvlc_media_player_play(vlc_media_player_single);
 }
 
 void Presenter::ShowImage(EStage stage)
@@ -286,7 +300,9 @@ void Presenter::ShowImage(EStage stage)
     }
     else if(g_stage == EStage::Win)
     {
+        //mix video & audio
         SquidGame::pThis->PlayVideo(SquidGame::pThis->win_video, true);
+        SquidGame::pThis->PlayUniqueMedia(SquidGame::pThis->win_audio);
     }
 
     emit SquidGame::pThis->UpdateScreen();
