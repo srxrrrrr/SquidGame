@@ -286,7 +286,7 @@ void SquidGame::PlayUniqueMedia(QString path)
     libvlc_media_player_play(vlc_media_player_single);
 }
 
-void Presenter::ShowImage(EStage stage)
+void Presenter::ShowBehavior(EStage stage)
 {
     g_stage = stage;
 
@@ -295,7 +295,6 @@ void Presenter::ShowImage(EStage stage)
         qDebug() << "dead event";
 
         SquidGame::pThis->timer->start(5000);
-
         SquidGame::pThis->PlayVideo(SquidGame::pThis->dead_video, true);
     }
     else if(g_stage == EStage::Win)
@@ -303,6 +302,12 @@ void Presenter::ShowImage(EStage stage)
         //mix video & audio
         SquidGame::pThis->PlayVideo(SquidGame::pThis->win_video, true);
         SquidGame::pThis->PlayUniqueMedia(SquidGame::pThis->win_audio);
+    }
+    else if(g_stage == EStage::Correct)
+    {
+        qDebug() << "correct event";
+        SquidGame::pThis->timer->start(4000);
+        SquidGame::pThis->PlayVideo(SquidGame::pThis->correct_video, true);
     }
 
     emit SquidGame::pThis->UpdateScreen();

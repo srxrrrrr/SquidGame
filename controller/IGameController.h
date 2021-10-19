@@ -17,7 +17,7 @@ class IPresenter
 {
 public:
     virtual ~IPresenter(){}
-    virtual void ShowImage(EStage stage) = 0;
+    virtual void ShowBehavior(EStage stage) = 0;
     virtual void ShowProgress(unsigned char progress) = 0;
 };
 

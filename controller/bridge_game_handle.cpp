@@ -8,7 +8,7 @@ BridgeGameHandle::BridgeGameHandle(IGameService* game_service, IPresenter* prese
 
 void BridgeGameHandle::Init(unsigned char total_step)
 {
-    presenter->ShowImage(EStage::Title);
+    presenter->ShowBehavior(EStage::Title);
     game_service->Init(total_step);
 }
 
@@ -17,7 +17,7 @@ void BridgeGameHandle::Start()
     unsigned char step = 0;
     bool finished = false;
 
-    presenter->ShowImage(EStage::Playing);
+    presenter->ShowBehavior(EStage::Playing);
     game_service->GetProgress(&step, &finished);
     presenter->ShowProgress(step);
 }
@@ -35,22 +35,23 @@ void BridgeGameHandle::SelectItem(ESelection selection)
     {
         if(finished)
         {
-            presenter->ShowImage(EStage::Win);
+            presenter->ShowBehavior(EStage::Win);
             presenter->ShowProgress(step);
         }
         else
         {
+            presenter->ShowBehavior(EStage::Correct);
             presenter->ShowProgress(step);
         }
     }
     else
     {
-        presenter->ShowImage(EStage::Dead);
+        presenter->ShowBehavior(EStage::Dead);
         presenter->ShowProgress(step);
     }
 }
 
 void BridgeGameHandle::Resume()
 {
-    presenter->ShowImage(EStage::Playing);
+    presenter->ShowBehavior(EStage::Playing);
 }

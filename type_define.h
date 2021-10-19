@@ -11,6 +11,7 @@ enum class EStage
 {
     Title,
     Playing,
+    Correct,
     Dead,
     Win,
 };

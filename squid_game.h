@@ -72,6 +72,7 @@ public:
     const QString opening_audio = "debug/media/Squid Game - Way Back Then.mp3";
     const QString dead_audio = "debug/media/dead.m4a";
     const QString dead_video = "debug/media/dead.mp4";
+    const QString correct_video = "debug/media/correct.mp4";
     const QString win_video = "debug/media/win.mp4";
     const QString win_audio = "debug/media/win.m4a";
 
@@ -84,6 +85,7 @@ public:
 //    const QString opening_audio = "/media/Squid Game - Way Back Then.mp3";
 //    const QString dead_audio = "/media/dead.m4a";
 //    const QString dead_video = "/media/dead.mp4";
+//    const QString correct_video = "debug/media/correct.mp4";
 //    const QString win_video = "/media/win.mp4";
 //    const QString win_audio = "/media/win.m4a";
 
@@ -102,7 +104,7 @@ signals:
 
 class Presenter : public IPresenter
 {
-    virtual void ShowImage(EStage stage);
+    virtual void ShowBehavior(EStage stage);
     virtual void ShowProgress(unsigned char progress);
 };
 
