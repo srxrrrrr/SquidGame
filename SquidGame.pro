@@ -36,3 +36,26 @@ unix|win32: LIBS += -L$$PWD/lib/ -llibvlc
 unix|win32: LIBS += -L$$PWD/lib/ -llibvlccore
 unix|win32: LIBS += -L$$PWD/lib/ -lvlc
 unix|win32: LIBS += -L$$PWD/lib/ -lvlccore
+
+# replace slashes in source path for Windows
+defineReplace(replaceSlash) {
+    path = $$1
+    win32:path ~= s,/,\\,g
+#    message("path:" $$path)
+    return($$path)
+}
+
+# copies the given files to the destination directory
+defineTest(copyToDestDir) {
+    src_dir = $$replaceSlash($$1)
+    dst_dir = $$replaceSlash($$2)
+
+    QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_quote($$src_dir) $$shell_quote($$dst_dir) $$escape_expand(\\n\\t)
+    export(QMAKE_POST_LINK)
+}
+
+CONFIG(release, debug|release): copyToDestDir("..\\SquidGame\\media", $$OUT_PWD\\release\\media\\)
+else:CONFIG(debug, debug|release): copyToDestDir("..\\SquidGame\\media", $$OUT_PWD\\debug\\media\\)
+
+CONFIG(release, debug|release): copyToDestDir("..\\SquidGame\\img", $$OUT_PWD\\release\\img\\)
+else:CONFIG(debug, debug|release): copyToDestDir("..\\SquidGame\\img", $$OUT_PWD\\debug\\img\\)
